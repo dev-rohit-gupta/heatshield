@@ -43,3 +43,39 @@ export type CurrentWeatherData = {
     isDay: boolean | null;
   };
 };
+
+/** Stable, vendor-independent models for destination search and routing. */
+export type PlaceResult = {
+  placeId: string;
+  name: string;
+  address: string;
+  location: Coordinates;
+};
+
+export type SearchPlacesData = { places: PlaceResult[] };
+
+export type RoutePlanRequest = {
+  origin: Coordinates;
+  destination: Coordinates;
+  travelMode: 'SCOOTER';
+  departureAt?: string;
+};
+
+export type RouteOption = {
+  routeId: string;
+  type: 'FASTEST' | 'ALTERNATIVE';
+  distanceMeters: number;
+  durationSeconds: number;
+  geometry: { type: 'LineString'; coordinates: [number, number][] }; // GeoJSON [lng, lat]
+  exposure: null; // Not calculated until the heat engine is implemented and verified.
+};
+
+export type RoutePlanData = {
+  origin: Coordinates;
+  destination: Coordinates;
+  travelMode: 'SCOOTER';
+  routes: RouteOption[];
+  recommendedRouteId: null;
+  analysisStatus: 'ROUTES_ONLY';
+  notice: string;
+};
