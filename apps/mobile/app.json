@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "HeatShield",
+    "slug": "heatshield",
+    "scheme": "heatshield",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      "expo-router"
+    ],
+    "android": {
+      "package": "com.example.heatshield",
+      "edgeToEdgeEnabled": true
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "apiBaseUrl": "not-configured"
+    }
+  }
+}

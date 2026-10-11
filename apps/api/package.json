@@ -1,0 +1,19 @@
+{
+  "name": "@heatshield/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@heatshield/shared": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.150",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.0",
+    "@types/node": "^22.0.0"
+  }
+}
