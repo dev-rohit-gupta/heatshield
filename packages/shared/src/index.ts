@@ -79,3 +79,23 @@ export type RoutePlanData = {
   analysisStatus: 'ROUTES_ONLY';
   notice: string;
 };
+
+/** NWS screening labels. This is an environmental estimate, not a medical diagnosis. */
+export type HeatIndexBand =
+  | 'BELOW_CAUTION'
+  | 'CAUTION'
+  | 'EXTREME_CAUTION'
+  | 'DANGER'
+  | 'EXTREME_DANGER';
+
+export type HeatIndexScreening = {
+  modelVersion: 'nws-heat-index-v1';
+  heatIndexC: number;
+  band: HeatIndexBand;
+  message: string;
+  limitation: string;
+};
+
+export type ScreenedWeatherData = CurrentWeatherData & {
+  heatScreening: HeatIndexScreening;
+};

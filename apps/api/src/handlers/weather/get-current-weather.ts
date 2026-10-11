@@ -1,6 +1,7 @@
 import type { APIGatewayProxyHandlerV2 } from 'aws-lambda';
-import type { ApiError, ApiMeta, ApiSuccess, Coordinates, CurrentWeatherData } from '@heatshield/shared';
+import type { ApiError, ApiMeta, ApiSuccess, Coordinates, CurrentWeatherData, ScreenedWeatherData } from '@heatshield/shared';
 import { getCurrentWeather } from '../../services/weather.service';
+import { screenHeatIndex } from '@heatshield/heat-engine';
 
 type ApiResponse = {
   statusCode: number;
@@ -11,7 +12,7 @@ type ApiResponse = {
 type Query = Record<string, string | undefined> | undefined;
 type WeatherLoader = (location: Coordinates) => Promise<CurrentWeatherData>;
 
-function jsonResponse(statusCode: number, body: ApiSuccess<CurrentWeatherData> | ApiError): ApiResponse {
+function jsonResponse(statusCode: number, body: ApiSuccess<ScreenedWeatherData> | ApiError): ApiResponse {
   return {
     statusCode,
     headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
@@ -48,7 +49,8 @@ export async function handleCurrentWeather(
 
   try {
     const data = await weatherLoader({ lat, lng });
-    return jsonResponse(200, { success: true, data, meta });
+    const heatScreening = screenHeatIndex(data.weather.temperatureC, data.weather.relativeHumidityPct);
+    return jsonResponse(200, { success: true, data: { ...data, heatScreening }, meta });
   } catch {
     return jsonResponse(502, {
       success: false,

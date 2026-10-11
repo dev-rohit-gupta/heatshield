@@ -25,6 +25,8 @@ test('current weather returns the standard success envelope', async () => {
   assert.equal(body.success, true);
   assert.equal(body.data.weather.temperatureC, 32);
   assert.equal(body.data.source.kind, 'MODEL_ESTIMATE');
+  assert.equal(body.data.heatScreening.modelVersion, 'nws-heat-index-v1');
+  assert.ok(Number.isFinite(body.data.heatScreening.heatIndexC));
   assert.equal(body.meta.requestId, 'req-1');
 });
 

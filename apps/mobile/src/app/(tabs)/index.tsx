@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as Location from 'expo-location';
-import type { Coordinates, CurrentWeatherData } from '@heatshield/shared';
+import type { Coordinates, ScreenedWeatherData } from '@heatshield/shared';
 import { InfoCard } from '@/components/info-card';
 import { ScreenShell } from '@/components/screen-shell';
 import { fetchCurrentWeather } from '@/services/weather-api';
@@ -17,7 +17,7 @@ function weatherValue(value: number | null, unit = ''): string {
 
 export default function HomeScreen() {
   const [stage, setStage] = useState<Stage>('idle');
-  const [conditions, setConditions] = useState<CurrentWeatherData | null>(null);
+  const [conditions, setConditions] = useState<ScreenedWeatherData | null>(null);
   const [locationLabel, setLocationLabel] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastCoordinates, setLastCoordinates] = useState<Coordinates | null>(null);
@@ -111,7 +111,12 @@ export default function HomeScreen() {
             <View style={styles.metric}><Text style={styles.metricLabel}>Solar radiation</Text><Text style={styles.metricValue}>{weatherValue(w.solarRadiationWm2, ' W/m²')}</Text></View>
           </View>
           <Text style={styles.source}>Open-Meteo model estimate · Valid {new Date(conditions.validAt).toLocaleString()}</Text>
-          <Text style={styles.source}>A heat exposure score will be added after the heat model is validated.</Text>
+          <View style={styles.screeningCard}>
+            <Text style={styles.screeningHeading}>Estimated heat index: {weatherValue(conditions.heatScreening.heatIndexC, '°C')}</Text>
+            <Text style={styles.screeningBand}>NWS screening: {conditions.heatScreening.band.replaceAll('_', ' ')}</Text>
+            <Text style={styles.screeningText}>{conditions.heatScreening.message}</Text>
+            <Text style={styles.screeningNote}>{conditions.heatScreening.limitation}</Text>
+          </View>
         </View>
       )}
 
@@ -154,4 +159,9 @@ const styles = StyleSheet.create({
   metricLabel: { fontSize: 12, color: colors.muted },
   metricValue: { marginTop: 5, fontWeight: '800', color: colors.ink, fontSize: 16 },
   source: { marginTop: 4, fontSize: 11, color: colors.muted, lineHeight: 16 },
+  screeningCard: { padding: 14, marginTop: 8, borderRadius: 12, backgroundColor: colors.background, gap: 7 },
+  screeningHeading: { fontSize: 19, fontWeight: '800', color: colors.ink },
+  screeningBand: { fontSize: 13, fontWeight: '700', color: colors.brand },
+  screeningText: { fontSize: 13, color: colors.ink, lineHeight: 19 },
+  screeningNote: { fontSize: 11, color: colors.muted, lineHeight: 17 },
 });
