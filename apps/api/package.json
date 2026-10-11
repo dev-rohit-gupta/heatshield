@@ -8,7 +8,7 @@
     "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
-    "@heatshield/shared": "0.1.0"
+    "@heatshield/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.150",

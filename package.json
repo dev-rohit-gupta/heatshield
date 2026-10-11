@@ -3,21 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "description": "Rider-first heat exposure safety app - Expo + AWS Lambda",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
-    "mobile": "npm run start --workspace @heatshield/mobile",
-    "android": "npm run android --workspace @heatshield/mobile",
-    "api:typecheck": "npm run typecheck --workspace @heatshield/api",
-    "mobile:typecheck": "npm run typecheck --workspace @heatshield/mobile",
-    "typecheck": "npm run typecheck --workspace @heatshield/shared && npm run typecheck --workspace @heatshield/heat-engine && npm run api:typecheck && npm run mobile:typecheck",
-    "test": "npm run test --workspace @heatshield/api && npm run test --workspace @heatshield/heat-engine",
-    "check": "npm run typecheck && npm run test"
+    "mobile": "pnpm --filter @heatshield/mobile start",
+    "android": "pnpm --filter @heatshield/mobile android",
+    "api:typecheck": "pnpm --filter @heatshield/api typecheck",
+    "mobile:typecheck": "pnpm --filter @heatshield/mobile typecheck",
+    "typecheck": "pnpm --filter @heatshield/shared typecheck && pnpm --filter @heatshield/heat-engine typecheck && pnpm api:typecheck && pnpm mobile:typecheck",
+    "test": "pnpm --filter @heatshield/api test && pnpm --filter @heatshield/heat-engine test",
+    "check": "pnpm typecheck && pnpm test"
   },
   "engines": {
     "node": ">=22.13.0"
   },
-  "packageManager": "npm@10.9.2"
+  "packageManager": "pnpm@12.11.2"
 }
