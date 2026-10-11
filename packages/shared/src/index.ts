@@ -30,8 +30,8 @@ export type CurrentWeatherData = {
   location: Coordinates;
   validAt: string;
   source: {
-    provider: 'Open-Meteo';
-    kind: 'MODEL_ESTIMATE';
+    provider: 'Open-Meteo' | 'HeatShield Demo';
+    kind: 'MODEL_ESTIMATE' | 'DEMO_SAMPLE';
   };
   weather: {
     temperatureC: number;
@@ -61,22 +61,33 @@ export type RoutePlanRequest = {
   departureAt?: string;
 };
 
+/** Time in the same modelled area weather. NOT a street-level or personal risk rating. */
+export type RouteTimeExposure = {
+  method: 'CONSTANT_AREA_HEAT_INDEX';
+  estimatedOutdoorSeconds: number;
+  heatIndexC: number;
+  band: HeatIndexBand;
+  weatherValidAt: string;
+  weatherSource: 'LIVE_MODEL' | 'DEMO_SAMPLE';
+};
+
 export type RouteOption = {
   routeId: string;
   type: 'FASTEST' | 'ALTERNATIVE';
   distanceMeters: number;
   durationSeconds: number;
   geometry: { type: 'LineString'; coordinates: [number, number][] }; // GeoJSON [lng, lat]
-  exposure: null; // Not calculated until the heat engine is implemented and verified.
+  exposure: RouteTimeExposure | null;
 };
 
 export type RoutePlanData = {
+  routeSource: 'AWS' | 'DEMO';
   origin: Coordinates;
   destination: Coordinates;
   travelMode: 'SCOOTER';
   routes: RouteOption[];
-  recommendedRouteId: null;
-  analysisStatus: 'ROUTES_ONLY';
+  recommendedRouteId: string | null;
+  analysisStatus: 'ROUTES_ONLY' | 'SCREENED' | 'WEATHER_UNAVAILABLE' | 'OUT_OF_SCOPE';
   notice: string;
 };
 

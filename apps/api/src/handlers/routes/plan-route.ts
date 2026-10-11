@@ -2,6 +2,7 @@ import type { APIGatewayProxyHandlerV2 } from 'aws-lambda';
 import { errorResult, ok } from '../../lib/http-response';
 import { AwsLocationProvider } from '../../providers/aws-location.provider';
 import { LocationService } from '../../services/location.service';
+import { WeatherRouteExposureAnalyzer } from '../../services/route-exposure.service';
 import { LocationProviderError, RouteUnavailableError } from '../../services/location.port';
 import { RequestValidationError, readRoutePlan } from '../../validators/location';
 
@@ -13,7 +14,7 @@ export async function handlePlanRoute(input: unknown, requestId: string, service
     return errorResult(400, 'INVALID_REQUEST', 'Invalid route planning request.', false, requestId);
   }
   try {
-    const useCase = service ?? new LocationService(new AwsLocationProvider());
+    const useCase = service ?? new LocationService(new AwsLocationProvider(), new WeatherRouteExposureAnalyzer());
     return ok(await useCase.plan(plan.origin, plan.destination, plan.departureAt), requestId);
   } catch (cause) {
     if (cause instanceof RouteUnavailableError) return errorResult(422, 'ROUTE_NOT_AVAILABLE', cause.message, false, requestId);

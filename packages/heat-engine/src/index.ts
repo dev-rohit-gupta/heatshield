@@ -13,3 +13,9 @@ export {
   type ExposureSegmentInput,
   type ExposureSummary,
 } from './exposure';
+export {
+  compareRouteOutdoorTime,
+  type RouteDuration,
+  type RouteTimeComparison,
+  type RouteTimeScreening,
+} from './route-screening';

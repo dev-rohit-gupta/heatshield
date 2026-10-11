@@ -4,9 +4,20 @@ import { handleCurrentWeather } from '../handlers/weather/get-current-weather';
 import { handleSearchPlaces } from '../handlers/places/search-places';
 import { handlePlanRoute } from '../handlers/routes/plan-route';
 import { errorResult } from '../lib/http-response';
+import { DemoLocationProvider } from '../providers/demo-location.provider';
+import { LocationService } from '../services/location.service';
+import { WeatherRouteExposureAnalyzer } from '../services/route-exposure.service';
+import { getCurrentWeather } from '../services/weather.service';
+import { getDemoWeather } from '../services/demo-weather.service';
 
 const port = Number(process.env.PORT || 3001);
 const host = process.env.HOST || '0.0.0.0';
+// Demo mode exists ONLY in this local dev adapter. Production handlers always use AWS.
+const demoService = process.env.LOCATION_PROVIDER === 'demo'
+  ? new LocationService(new DemoLocationProvider(), new WeatherRouteExposureAnalyzer(
+    process.env.DEMO_WEATHER === '1' ? getDemoWeather : getCurrentWeather,
+  ))
+  : undefined;
 
 // Local-only development adapter. Production APIs use API Gateway + individual Lambda handlers.
 const server = createServer(async (request, response) => {
@@ -27,7 +38,7 @@ const server = createServer(async (request, response) => {
     return;
   }
   if (request.method === 'GET' && url.pathname === '/v1/places/search') {
-    send(await handleSearchPlaces(Object.fromEntries(url.searchParams), id));
+    send(await handleSearchPlaces(Object.fromEntries(url.searchParams), id, demoService));
     return;
   }
   if (request.method === 'POST' && url.pathname === '/v1/routes/plan') {
@@ -49,7 +60,7 @@ const server = createServer(async (request, response) => {
       send(errorResult(400, 'INVALID_REQUEST', 'Invalid JSON request body.', false, id));
       return;
     }
-    send(await handlePlanRoute(input, id));
+    send(await handlePlanRoute(input, id, demoService));
     return;
   }
   send(errorResult(404, 'RESOURCE_NOT_FOUND', 'Route not found.', false, id));
@@ -57,5 +68,7 @@ const server = createServer(async (request, response) => {
 
 server.listen(port, host, () => {
   console.log(`HeatShield local API: http://localhost:${port}/v1`);
-  console.log('Development only. AWS location endpoints require configured AWS credentials.');
+  console.log(demoService
+    ? `DEMO routing active - illustrative geometry only. Weather: ${process.env.DEMO_WEATHER === '1' ? 'DEMO SAMPLE' : 'Open-Meteo model'}`
+    : 'AWS routing active - AWS credentials required.');
 });

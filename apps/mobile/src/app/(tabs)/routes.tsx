@@ -120,7 +120,7 @@ export default function RoutesScreen() {
   }
 
   return (
-    <ScreenShell title="Plan your ride" subtitle="Find routes for your scooter. Heat exposure comparison is coming next.">
+    <ScreenShell title="Plan your ride" subtitle="Compare outdoor time using available weather. Demo routes are not for navigation.">
       <View style={styles.controlRow}>
         <Pressable style={styles.button} disabled={locating} onPress={useCurrentLocation} accessibilityRole="button">
           <Text style={styles.buttonText}>{locating ? 'Finding...' : 'Use GPS'}</Text>
@@ -154,6 +154,15 @@ export default function RoutesScreen() {
         <>
           <RouteMap origin={origin} destination={selectedPlace.location} routes={plan.routes} selectedRouteId={selectedRouteId}/>
           <Text style={styles.heading}>Available routes</Text>
+          <View style={plan.routeSource === 'DEMO' ? styles.demoNotice : styles.detailNotice}>
+            <Text style={styles.noticeText}>{plan.routeSource === 'DEMO'
+              ? 'DEMO ROUTES · Illustrated paths, not real road directions. Do not navigate with these.'
+              : 'AWS routing · Actual provider route geometry.'}</Text>
+          </View>
+          {plan.routes.some(route => route.exposure?.weatherSource === 'DEMO_SAMPLE') && (
+            <Text style={styles.demoText}>Weather values below are DEMO SAMPLES, not live conditions.</Text>
+          )}
+          <Text style={styles.subtle}>Route heat screening assumes the whole journey is outdoors in the same area weather. It cannot detect street shade or personal heat risk.</Text>
           {plan.routes.map(route => (
             <Pressable
               key={route.routeId}
@@ -161,15 +170,23 @@ export default function RoutesScreen() {
               accessibilityRole="button"
               onPress={() => setSelectedRouteId(route.routeId)}
             >
-              <Text style={styles.routeTitle}>{route.type === 'FASTEST' ? 'Fastest route' : 'Alternative route'}</Text>
+              <View style={styles.routeTitleRow}>
+                <Text style={styles.routeTitle}>{route.type === 'FASTEST' ? 'Fastest route' : 'Alternative route'}</Text>
+                {plan.recommendedRouteId === route.routeId && <Text style={styles.recommendation}>LESS TIME OUTDOORS</Text>}
+              </View>
               <Text style={styles.routeMetrics}>{Math.ceil(route.durationSeconds / 60)} min  ·  {(route.distanceMeters / 1000).toFixed(1)} km</Text>
+              {route.exposure && (
+                <Text style={styles.heatDetail}>
+                  Approx. {Math.ceil(route.exposure.estimatedOutdoorSeconds / 60)} min in {route.exposure.band.replaceAll('_', ' ').toLowerCase()} heat-index conditions
+                </Text>
+              )}
             </Pressable>
           ))}
           <Text style={styles.subtle}>{plan.notice}</Text>
           <Text style={styles.subtle}>Starting a trip will be enabled after shift and trip APIs are implemented.</Text>
         </>
       )}
-      {!origin && <InfoCard eyebrow="START HERE" title="Choose a location" description="Use GPS or a labelled Pune test location. Then search a destination to see AWS scooter routes."/>}
+      {!origin && <InfoCard eyebrow="START HERE" title="Choose a location" description="Choose Try Pune and search Viman Nagar or Koregaon Park for an offline routing demo. Live routing needs AWS access."/>}
     </ScreenShell>
   );
 }
@@ -188,6 +205,13 @@ const styles = StyleSheet.create({
   error: { backgroundColor: '#FEF2F2', padding: 12, borderRadius: 10 },
   errorText: { color: '#991B1B', lineHeight: 20 },
   heading: { fontSize: 17, fontWeight: '800', color: colors.ink },
+  demoNotice: { backgroundColor: '#FFF3D6', borderRadius: 10, padding: 11, borderWidth: 1, borderColor: '#F1C76B' },
+  detailNotice: { backgroundColor: '#E6F7F2', borderRadius: 10, padding: 11 },
+  noticeText: { fontSize: 12, color: colors.ink, fontWeight: '700', lineHeight: 18 },
+  demoText: { fontSize: 12, color: '#9A3412', fontWeight: '700' },
+  routeTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
+  recommendation: { fontSize: 10, fontWeight: '800', color: colors.brand, flexShrink: 1, textAlign: 'right' },
+  heatDetail: { fontSize: 12, lineHeight: 18, color: colors.ink },
   routeCard: { padding: 14, backgroundColor: colors.surface, borderRadius: 12, borderWidth: 1, borderColor: colors.border, gap: 4 },
   selected: { borderWidth: 2, borderColor: colors.brand },
   routeTitle: { fontSize: 15, color: colors.ink, fontWeight: '800' },
