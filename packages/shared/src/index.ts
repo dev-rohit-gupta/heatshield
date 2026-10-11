@@ -24,3 +24,22 @@ export type ApiError = {
   };
   meta: ApiMeta;
 };
+
+/** Current conditions from an external weather model. No safety score is implied. */
+export type CurrentWeatherData = {
+  location: Coordinates;
+  validAt: string;
+  source: {
+    provider: 'Open-Meteo';
+    kind: 'MODEL_ESTIMATE';
+  };
+  weather: {
+    temperatureC: number;
+    apparentTemperatureC: number;
+    relativeHumidityPct: number;
+    windSpeedKph: number | null;
+    uvIndex: number | null;
+    solarRadiationWm2: number | null;
+    isDay: boolean | null;
+  };
+};
