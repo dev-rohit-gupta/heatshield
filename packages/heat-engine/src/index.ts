@@ -19,3 +19,16 @@ export {
   type RouteTimeComparison,
   type RouteTimeScreening,
 } from './route-screening';
+export {
+  advanceShift,
+  changeShiftEnvironment,
+  changeShiftActivity,
+  endShift,
+  startShift,
+  summarizeShift,
+  verifiedWeather,
+  MAX_CONTINUOUS_INTERVAL_SECONDS,
+  MAX_WEATHER_AGE_MS,
+  type ShiftLedger,
+  type WeatherEvidence,
+} from './shift-tracker';

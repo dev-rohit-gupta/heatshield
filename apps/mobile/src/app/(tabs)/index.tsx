@@ -6,6 +6,7 @@ import { InfoCard } from '@/components/info-card';
 import { ScreenShell } from '@/components/screen-shell';
 import { fetchCurrentWeather } from '@/services/weather-api';
 import { colors } from '@/theme/colors';
+import { ShiftPanel } from '@/features/shifts/shift-panel';
 
 const PUNE_DEMO_LOCATION: Coordinates = { lat: 18.5204, lng: 73.8567 };
 
@@ -128,11 +129,7 @@ export default function HomeScreen() {
         />
       )}
 
-      <InfoCard
-        eyebrow="YOUR SHIFT"
-        title="Shift tracking is coming next"
-        description="Current weather does not automatically mean a rider is at risk. Shift tracking and heat exposure scoring are separate upcoming features."
-      />
+      <ShiftPanel />
     </ScreenShell>
   );
 }
