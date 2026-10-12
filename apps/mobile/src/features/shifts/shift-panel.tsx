@@ -15,7 +15,8 @@ const duration = (seconds: number) => {
 };
 
 export function ShiftPanel() {
-  const { data, ready, error, start, end, setEnvironment, setActivity, refreshWeather } = useShift();
+  const { data, ready, error, start, end, setEnvironment, setActivity, refreshWeather,
+    backgroundEnabled, lastBackgroundSample, enableBackground, disableBackground } = useShift();
   const shift = data.active;
   const summary = shift ? summarizeShift(shift) : null;
   return (
@@ -24,7 +25,7 @@ export function ShiftPanel() {
         <Text style={styles.title}>Your work shift</Text>
         <Text style={styles.status}>{!ready ? 'Loading' : shift ? 'ACTIVE' : 'NOT STARTED'}</Text>
       </View>
-      <Text style={styles.note}>This device stores your shift history. Cloud sync and background tracking are not enabled yet.</Text>
+      <Text style={styles.note}>Shifts stay on this device. Completed summaries are queued for later secure sync; no cloud upload occurs yet.</Text>
       {error ? <Text style={styles.error} accessibilityRole="alert">{error}</Text> : null}
       {!shift ? (
         <Pressable disabled={!ready} style={[styles.primary, !ready && styles.disabled]}
@@ -44,6 +45,14 @@ export function ShiftPanel() {
               </Pressable>
             ))}
           </View>
+          <Text style={styles.label}>Optional Android background sampling</Text>
+          <Text style={styles.small}>Uses a visible Android notification and location permission while enabled. Only sampling timestamps are saved; no raw GPS coordinates. Background time remains unassessed until valid weather evidence is available.</Text>
+          <Pressable style={styles.secondary} accessibilityRole="button"
+            onPress={() => void (backgroundEnabled ? disableBackground() : enableBackground())}>
+            <Text style={styles.secondaryLabel}>{backgroundEnabled ? 'Stop background sampling' : 'Enable background sampling'}</Text>
+          </Pressable>
+          <Text style={styles.small}>{backgroundEnabled ? 'Background sampling ON' : 'Background sampling OFF'}
+            {lastBackgroundSample ? ` · Last sample ${new Date(lastBackgroundSample).toLocaleTimeString()}` : ''}</Text>
           <Text style={styles.label}>Your activity</Text>
           <View style={styles.row}>
             {(['WORKING', 'RESTING'] as const).map(activity => (

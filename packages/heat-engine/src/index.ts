@@ -32,3 +32,5 @@ export {
   type ShiftLedger,
   type WeatherEvidence,
 } from './shift-tracker';
+
+export { completedShiftEvent, enqueueCompletedShift, acknowledgeShiftEvents, type ShiftSyncEvent } from './shift-sync';

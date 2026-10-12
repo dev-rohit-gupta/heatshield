@@ -6,7 +6,9 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
   },
   "include": [
     "**/*.ts",

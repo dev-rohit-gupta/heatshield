@@ -8,7 +8,15 @@
     "userInterfaceStyle": "light",
     "plugins": [
       "expo-router",
-      "@maplibre/maplibre-react-native"
+      "@maplibre/maplibre-react-native",
+      [
+        "expo-location",
+        {
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true,
+          "locationWhenInUsePermission": "HeatShield uses location to show local weather while you use the app."
+        }
+      ]
     ],
     "android": {
       "package": "com.example.heatshield",

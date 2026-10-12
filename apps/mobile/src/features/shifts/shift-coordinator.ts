@@ -1,6 +1,6 @@
 import {
   advanceShift, changeShiftActivity, changeShiftEnvironment, endShift,
-  startShift, summarizeShift, type ShiftLedger, type WeatherEvidence,
+  startShift, summarizeShift, enqueueCompletedShift, type ShiftLedger, type WeatherEvidence,
   type ExposureEnvironment,
 } from '@heatshield/heat-engine';
 import type { ShiftArchive, ShiftRepository } from './shift-repository';
@@ -8,7 +8,7 @@ import type { ShiftWeatherSource } from './shift-weather.port';
 
 /** Serializes every state transition, avoiding overlapping timer/button writes. */
 export class ShiftCoordinator {
-  private state: ShiftArchive = { active: null, history: [] };
+  private state: ShiftArchive = { active: null, history: [], pendingSync: [] };
   private weather: WeatherEvidence | null = null;
   private weatherRequestId = 0;
   private ready = false;
@@ -95,7 +95,12 @@ export class ShiftCoordinator {
     return this.serialize(async () => {
       if (!this.state.active) return;
       const ended = endShift(this.state.active, this.clock(), this.weather);
-      await this.persist({ active: null, history: [ended, ...this.state.history].slice(0, 14) });
+      // One atomic AsyncStorage write commits both the ended shift and its offline outbox event.
+      await this.persist({
+        active: null,
+        history: [ended, ...this.state.history].slice(0, 14),
+        pendingSync: enqueueCompletedShift(this.state.pendingSync, ended),
+      });
       this.weatherRequestId++;
       this.weather = null;
     });

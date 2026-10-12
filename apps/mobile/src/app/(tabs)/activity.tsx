@@ -30,6 +30,7 @@ export default function ActivityScreen() {
           </View>
         );
       })}
+      <Text style={styles.muted}>Offline sync queue: {data.pendingSync.length} completed shift{data.pendingSync.length === 1 ? '' : 's'} awaiting authenticated cloud sync.</Text>
       <Text style={styles.muted}>Weather-based NWS screening is not a medical risk score. No raw GPS locations are saved in this history.</Text>
     </ScreenShell>
   );
